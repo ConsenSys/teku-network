@@ -1,15 +1,15 @@
 # Teku Private Network
 
-This repository contains code to provision a Ethereum client Teku private network in AWS environment. 
-Private network consist of one node Ethereum 1 network using Besu client, single Teku boot node and
+This repository contains code to provision a Teku(Ethereum 2 client) private network in AWS environment. 
+Private network consist of one node Besu client, single Teku boot node and
 any number of Teku peer-nodes.
 
 Besu node is created with Gensis file. Genesis file includes few accounts with large amount of ether and a contract to
 to deposit 32 ethers for validator registration.
 
-Besu client starts first to form the ethereum 1 network. Secondly Teku boot node starts referincing the ethereum 1 network.
-Teku requires Ethereum version 1 client to start. Each Teku node generate validator keys (64) and register keys by depositing 32 ethers
-by executing the contract. Next Teku peer nodes (N number of nodes) are started and join the network by communicating with the Teku boot node.   
+Besu client starts first to form the ethereum 1 network. Secondly Teku boot node starts connecting to the ethereum 1 network.
+Each Teku node generates validator keys (64) and register keys by depositing 32 ethers via executing the contract. 
+Next Teku peer nodes (N number of nodes) are started and join the network by communicating with the Teku boot node.   
 
 ![network-architecture](teku-private-network.svg)
 
@@ -18,7 +18,7 @@ by executing the contract. Next Teku peer nodes (N number of nodes) are started 
 AWS cloudformation template currently creates resources in a new VPC. 
 
 Pre-requisite
-- Access to AWS with sufficient priviledge to create vpc, subnet, nacl, security-groups, ec2, autoscaling group
+- Access to AWS with sufficient privilege to create vpc, subnet, nacl, security-groups, ec2, autoscaling group
 - API access and aws cli configured
 - Name of the ssh key for EC2 instances
 
@@ -49,3 +49,11 @@ Following cloudformation parameters supported.
 | TekuPeerNodesCount   | 1            | Number of Teku peer nodes |
 | TekuPeerNodesCountMax| 5            | Max Teku peer nodes. Must increase if TekuPeerNodesCount is increased |
 | TekuImageTag         | latest       | Teku docker image tag |
+
+
+# View Logs
+
+Currently no log exports or metric exports configured for these networks. Need to ssh into the EC2 instances to view the logs. Besu and Teku containers are started 
+with [run-besu.sh](run-besu.sh) and [run-teku.sh](run-teku.sh) helper scripts. Logs for these scripts are available on the instance at
+/tmp folder teku-setup.log and besu-setup.log. Docker containers are started as the last step in these setup scripts and container logs
+can be viewed using commands `docker logs -f besu` and `docker logs -f teku`. 
